@@ -1,7 +1,6 @@
 package com.red.care.task.exception;
 
 import com.red.care.task.externalapi.errordecoder.GithubException;
-import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,15 +13,22 @@ import org.springframework.web.method.annotation.MethodArgumentTypeMismatchExcep
 @ControllerAdvice
 public class GlobalExceptionHandler {
 
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<ErrorBody> handleIllegalArgumentException(IllegalArgumentException ex) {
+        log.error("Input Parameter is not valid", ex);
+        ErrorBody errorBody = createErrorBody(HttpStatus.BAD_REQUEST, "Invalid Input Parameter");
+        return createErrorResponseEntity(HttpStatus.BAD_REQUEST, errorBody);
+    }
+
     @ExceptionHandler(MissingServletRequestParameterException.class)
-    public ResponseEntity<ErrorBody> handleConstraintViolation(MissingServletRequestParameterException ex) {
+    public ResponseEntity<ErrorBody> handleConstraintViolationException(MissingServletRequestParameterException ex) {
         log.error("Missing Input Parameter", ex);
         ErrorBody errorBody = createErrorBody(HttpStatus.BAD_REQUEST, "Missing Input Parameter");
         return createErrorResponseEntity(HttpStatus.BAD_REQUEST, errorBody);
     }
 
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
-    public ResponseEntity<ErrorBody> handleTypeMismatch(MethodArgumentTypeMismatchException ex) {
+    public ResponseEntity<ErrorBody> handleTypeMismatchException(MethodArgumentTypeMismatchException ex) {
         log.error("Parameter type mismatch", ex);
         ErrorBody errorBody = createErrorBody(HttpStatus.BAD_REQUEST, "Parameter type mismatch");
         return createErrorResponseEntity(HttpStatus.BAD_REQUEST, errorBody);
