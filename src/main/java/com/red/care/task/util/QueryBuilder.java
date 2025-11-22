@@ -6,9 +6,10 @@ import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
 import java.time.ZoneId;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Slf4j
 @Component
@@ -21,24 +22,20 @@ public class QueryBuilder {
 
     public static String buildQueryParameter(final String language, final Date createdFrom) {
         try {
-            final LocalDate createdlocalDate = createdFrom.toInstant()
+            final LocalDate createdFromlocalDate = createdFrom.toInstant()
                     .atZone(ZoneId.systemDefault())
                     .toLocalDate();
 
-            final List<String> queryParameters = new ArrayList<>();
-
-            if (language != null && !language.isBlank()) {
-                queryParameters.add(LANGUAGE_FIELD + language);
-            }
-            if (createdlocalDate != null) {
-                queryParameters.add(CREATED_FIELD_GREATER_THAN_EQUAL + createdlocalDate);
-            }
-
-            //Assumption to filter out lowest score repositories
-            queryParameters.add(FORKS_FIELD_GREATER_THAN_EQUAL + ZERO);
-            queryParameters.add(STARS_FIELD_GREATER_THAN_EQUAL + ZERO);
-
-            return String.join(" ", queryParameters);
+            return Stream.of(Optional.ofNullable(language)
+                                    .filter(lang -> !lang.isBlank())
+                                    .map(lang -> LANGUAGE_FIELD + lang),
+                            Optional.of(CREATED_FIELD_GREATER_THAN_EQUAL + createdFromlocalDate),
+                            Optional.of(FORKS_FIELD_GREATER_THAN_EQUAL + ZERO),
+                            Optional.of(STARS_FIELD_GREATER_THAN_EQUAL + ZERO)
+                    )
+                    .filter(Optional::isPresent)
+                    .map(Optional::get)
+                    .collect(Collectors.joining(" "));
         } catch (Exception ex) {
             log.error("Failed to build Query Parameter", ex);
             throw new ApiException("Query Builder Failed");

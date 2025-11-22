@@ -20,6 +20,13 @@ public class QueryBuilderTest {
     }
 
     @Test
+    public void emptyLanguageParameter_queryWithoutLanguageField() throws Exception {
+        Date date = new SimpleDateFormat("dd-MM-yyyy").parse("21-11-2025");
+        String query = QueryBuilder.buildQueryParameter("", date);
+        assert (query.equals("created:>=2025-11-21 forks:>0 stars:>0"));
+    }
+
+    @Test
     public void createdFromDateNull_throwsException() throws Exception {
         assertThrows(ApiException.class, () ->
                 QueryBuilder.buildQueryParameter("java", null));
