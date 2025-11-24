@@ -4,7 +4,8 @@
 A Spring Boot application that integrates with the GitHub REST API to search public repositories, calculate their popularity score based on stars, forks and recent activity and return results sorted by score. The project demonstrates the use of Feign client, custom error decoding, concurrent data fetching asynchronously using CompletableFuture and ExecutorService.
 
 ## Running Application
-Clone the main branch and run the main class file (**RedCareTaskApplication.java**)
+- In the **application.yml** file, replace **${GITHUB_TOKEN:}** with your github personal token **OR** use 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
+- Clone the main branch and run the main class file (**RedCareTaskApplication.java**)
 
 ## API Endpoint
 - **GET** /v1/repositories-search
@@ -43,3 +44,4 @@ Clone the main branch and run the main class file (**RedCareTaskApplication.java
 ## Github API Limitations
 - Github search API reutrns max 100 repositories per page and in total max 1000 results. 
 - We can explore alternative or paid APIs that provide complete repository data and persist it in our database to significantly enhance the REST API response time.
+- Github does not allow pushing github access token, in the future we can replace with environment variable or encrypt using sops.
